@@ -75,7 +75,7 @@ plays = list()
 
 for (k in 1:length(drives)) {
     #Divide the drive into plays:
-    playbreak_regex = "(?<down>1st|2nd|3rd|4th|1ST|2ND|3RD|4TH) (and|AND) (?<togo>\\d{1,2}) at (?<field>[A-Za-z]{3,4}) (?<yardline>\\d{1,2})</td>" 
+    playbreak_regex = "(?<down>1st|2nd|3rd|4th|1ST|2ND|3RD|4TH) (and|AND) (?<togo>\\d{1,2}|goal|Goal|GOAL) at (?<field>[A-Za-z]{3,4}) (?<yardline>\\d{1,2})</td>" 
     playbreaks = gregexpr(playbreak_regex, drives[[k]][['pbp']], perl=TRUE, fixed=FALSE)[[1]]
     nplay = length(playbreaks)
 
@@ -94,7 +94,7 @@ for (k in 1:length(drives)) {
         #Then the yards to go:
         togostart = attr(playbreaks, 'capture.start')[j,'togo']
         togolength = attr(playbreaks, 'capture.length')[j,'togo'] - 1
-        togo = as.numeric(substr(drives[[k]][['pbp']], togostart, togostart+togolength))
+        togo = substr(drives[[k]][['pbp']], togostart, togostart+togolength)
 
         #Guestimate the game time remaining:
         time = drives[[k]][['time']] - (j-1)/nplay * drives[[k]][['duration']]
