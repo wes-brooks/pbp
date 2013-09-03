@@ -125,8 +125,26 @@ for (k in 1:length(drives)) {
     }
 }
 
-rush_nogain_regex = "<td><a.*?>(?<player>[-a-zA-Z\\. ']+)</a> rush [\\s\\w]*for no gain.*</td>"
-rush_gain_regex = "<td><a.*?>(?<player>[-a-zA-Z\\. ']+)</a> rush [\\s\\w]*for (?<gain>\\d+) yards.*</td>"
-rush_loss_regex = "<td><a.*?>(?<player>[-a-zA-Z\\. ']+)</a> rush [\\s\\w]*for a loss of (?<loss>\\d+) yards.*</td>"
-pass_regex = "<td><a.*?>(?<QB>[-a-zA-Z\\. ']+)</a> pass (?<completion>(in)?complete) to <a.*?>(?<receiver>[-a-zA-Z\\. ']+)</a>"
-kick_regex = "<td><a.*?>(?<player>[-a-zA-Z\\. ']+)</a>"
+kickoff_regex = "<td><a.*?>(?<kicker>[-a-zA-Z\\. ']+)</a> kickoff for (?<kickdist>\\d{1,3}) yards? (returned by <a.*?>(?<returner>[-a-zA-Z\\. ']+)</a> for (?<returndist>\\d{1,3}) yards|.*touchback).*</td>"
+rush_regex = "<td><a.*?>(?<player>[-a-zA-Z\\. ']+)</a> rush [\\s\\w]*for ((?<gain>\\d+) yards?|(a )?loss of (?<loss>\\d+) yards?|(?<nogain>no gain)).*</td>"
+pass_regex = "<td><a.*?>(?<QB>[-a-zA-Z\\. ']+)</a> pass ((?<complete>complete)|(?<incomplete>incomplete))( to <a.*?>(?<receiver>[-a-zA-Z\\. ']+)</a>(?(complete) for ((?<gain>\\d+) yards?|(a )?loss of (?<loss>\\d+) yards?|(?<nogain>no gain)).*</td>))?"
+punt_regex = "<td><a.*?>(?<player>[-a-zA-Z\\. ']+)</a> punt for (?<dist>\\d{1,3}) yards?(.*touchback.*|.*out[- ]of[- ]bounds at|.*fair catch by (<a.*?>)?(?<catcher>[-a-zA-Z\\. ']+)(</a>)? at|.*returned by (<a.*?>)?(?<returner>[-a-zA-Z\\. ']+)(</a>)? for (?<return>no gain|\\d{1,3} yards) to)( the (?<side>[a-zA-Z]+) (?<yardline>\\d{1,2}))?"
+penalty_regex = "<td>(?<team>[-a-zA-Z\\. ']+) penalty (?<dist>\\d{1,3}) yards? (?<penalty>[-a-zA-Z\\. ']+)( on (<a.*?>)?(?<player>[-a-zA-Z\\. ']+)(</a>)?)? (?<decision>accepted|declined).*</td>"
+
+fumble_regex = "fumbled?.*(forced by (<a.*?>)?(?<forcer>[-a-zA-Z\\. ']+)(</a>)?)?.*(recovered by (?<team>[a-zA-Z]+) (<a.*?>)?(?<recoverer>[-a-zA-Z\\. ']+)(</a>)?)?"
+interception_regex = "intercept(ed|ion)? by (<a.*?>)?(?<intercepter>[-a-zA-Z\\. ']+)(</a>)? at the (?<side>[a-zA-Z]+) (?<yardline>\\d{1,2})[\\.,]?( returned for (?<return>\\d{1,3} yards|no gain))?"
+
+for (k in 1:length(plays)) {
+    pbp = plays[[k]][['pbp']]
+    print(k)
+    if (length(grep(kickoff_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(1)}
+    else if (length(grep(rush_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(2)}
+    else if (length(grep(pass_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(3)}
+    else if (length(grep(punt_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(4)}
+    else if (length(grep(penalty_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(5)}
+    else if (length(grep(interception_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(6)}
+}
+    
+    
+    
+    
