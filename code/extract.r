@@ -119,32 +119,84 @@ for (k in 1:length(drives)) {
         #Now compute the distance from the goal line:
         if (offense_unlike < defense_unlike) {dist = 100 - line}
         else {dist = line}
+        
+        #Replace 'goal' to go with the distance to the goal line:
+        if (substr(togo[1],1,1)=='g' || substr(togo[1],1,1)=='G') {togo = dist}
+        togo = as.numeric(togo)
 
         #Add this play to the list
-        plays[[length(plays)+1]] = list(down=down, togo=togo, time=time, dist=dist, pbp=pbp)
+        plays[[length(plays)+1]] = list(poss=drives[[k]][['team']], down=down, togo=togo, time=time, dist=dist, pbp=pbp)
     }
 }
 
+#Special teams plays:
 kickoff_regex = "<td><a.*?>(?<kicker>[-a-zA-Z\\. ']+)</a> kickoff for (?<kickdist>\\d{1,3}) yards? (returned by <a.*?>(?<returner>[-a-zA-Z\\. ']+)</a> for (?<returndist>\\d{1,3}) yards|.*touchback).*</td>"
+punt_regex = "<td><a.*?>(?<player>[-a-zA-Z\\. ']+)</a> punt for (?<dist>\\d{1,3}) yards?(.*touchback.*|.*out[- ]of[- ]bounds at|.*fair catch by (<a.*?>)?(?<catcher>[-a-zA-Z\\. ']+)(</a>)? at|.*returned by (<a.*?>)?(?<returner>[-a-zA-Z\\. ']+)(</a>)? for (?<return>no gain|\\d{1,3} yards) to)( the (?<side>[a-zA-Z]+) (?<yardline>\\d{1,2}))?"
+fg_regex = "<td><a.*?>(?<kicker>[-a-zA-Z\\. ']+)</a> (?<kickdist>\\d{1,3}) yards? field goal (?<made>GOOD|MADE)|(?<missed>MISSED|NO GOOD).*</td>"
+
+#Offensive plays
 rush_regex = "<td><a.*?>(?<player>[-a-zA-Z\\. ']+)</a> rush [\\s\\w]*for ((?<gain>\\d+) yards?|(a )?loss of (?<loss>\\d+) yards?|(?<nogain>no gain)).*</td>"
 pass_regex = "<td><a.*?>(?<QB>[-a-zA-Z\\. ']+)</a> pass ((?<complete>complete)|(?<incomplete>incomplete))( to <a.*?>(?<receiver>[-a-zA-Z\\. ']+)</a>(?(complete) for ((?<gain>\\d+) yards?|(a )?loss of (?<loss>\\d+) yards?|(?<nogain>no gain)).*</td>))?"
-punt_regex = "<td><a.*?>(?<player>[-a-zA-Z\\. ']+)</a> punt for (?<dist>\\d{1,3}) yards?(.*touchback.*|.*out[- ]of[- ]bounds at|.*fair catch by (<a.*?>)?(?<catcher>[-a-zA-Z\\. ']+)(</a>)? at|.*returned by (<a.*?>)?(?<returner>[-a-zA-Z\\. ']+)(</a>)? for (?<return>no gain|\\d{1,3} yards) to)( the (?<side>[a-zA-Z]+) (?<yardline>\\d{1,2}))?"
-penalty_regex = "<td>(?<team>[-a-zA-Z\\. ']+) penalty (?<dist>\\d{1,3}) yards? (?<penalty>[-a-zA-Z\\. ']+)( on (<a.*?>)?(?<player>[-a-zA-Z\\. ']+)(</a>)?)? (?<decision>accepted|declined).*</td>"
 
+#Turnovers/timeouts/penalties:
 fumble_regex = "fumbled?.*(forced by (<a.*?>)?(?<forcer>[-a-zA-Z\\. ']+)(</a>)?)?.*(recovered by (?<team>[a-zA-Z]+) (<a.*?>)?(?<recoverer>[-a-zA-Z\\. ']+)(</a>)?)?"
 interception_regex = "intercept(ed|ion)? by (<a.*?>)?(?<intercepter>[-a-zA-Z\\. ']+)(</a>)? at the (?<side>[a-zA-Z]+) (?<yardline>\\d{1,2})[\\.,]?( returned for (?<return>\\d{1,3} yards|no gain))?"
+penalty_regex = "<td>(?<team>[-a-zA-Z\\. ']+) penalty (?<dist>\\d{1,3}) yards? (?<penalty>[-a-zA-Z\\. ']+)( on (<a.*?>)?(?<player>[-a-zA-Z\\. ']+)(</a>)?)? (?<decision>accepted|declined).*</td>"
+timeout_regex = "<td>Timeout (?<team>[-a-zA-Z\\. ']+).* (?<min>\\d{1,2})?:(?<sec>\\d\\d).*"
+
+
+#Establish the columns:
+rush = pass = punt = kickoff = fg = INT = fumble = pen = timeout = FALSE
+poss = down = togo = time = dist = passer = carrier = kicker = returner = gain = retrn = made = intercepter = forced_by = recovered_by = penalized_team = penalized_player = NA
+default_row = data.frame(poss, down, time, togo, dist, rush, pass, punt, kickoff, fg, INT, fumble, pen, timeout, passer, carrier, kicker, returner, gain, retrn, made, intercepter, forced_by, recovered_by, penalized_team, penalized_player)
+
+play_table = data.frame(matrix(NA, ncol=length(default_row), nrow=0))  
+colnames(play_table) = colnames(default_row)
 
 for (k in 1:length(plays)) {
+    #Get the already-established metadata:
+    this = default_row
+    this$poss = plays[[k]][['poss']]
+    this$down = plays[[k]][['down']]
+    this$time = plays[[k]][['time']]
+    this$togo = plays[[k]][['togo']]
+    this$dist = plays[[k]][['dist']]
+
     pbp = plays[[k]][['pbp']]
-    print(k)
-    if (length(grep(kickoff_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(1)}
-    else if (length(grep(rush_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(2)}
-    else if (length(grep(pass_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(3)}
-    else if (length(grep(punt_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(4)}
-    else if (length(grep(penalty_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(5)}
-    else if (length(grep(interception_regex, pbp, perl=TRUE, fixed=FALSE))>0) {print(6)}
+    
+    if (length(grep(kickoff_regex, pbp, perl=TRUE, fixed=FALSE))>0) {
+        match = gregexpr(kickoff_regex, pbp, perl=TRUE, fixed=FALSE)[[1]]
+        
+    }
+    else if (length(grep(fg_regex, pbp, perl=TRUE, fixed=FALSE))>0) {
+        print(8)
+    }
+    else if (length(grep(punt_regex, pbp, perl=TRUE, fixed=FALSE))>0) {
+        print(4)
+    }
+    else if (length(grep(rush_regex, pbp, perl=TRUE, fixed=FALSE))>0) {
+        print(2)
+    }
+    else if (length(grep(pass_regex, pbp, perl=TRUE, fixed=FALSE))>0) {
+        print(3)
+    }
+    else if (length(grep(interception_regex, pbp, perl=TRUE, fixed=FALSE))>0) {
+        print(6)
+    }
+    else if (length(grep(timeout_regex, pbp, perl=TRUE, fixed=FALSE))>0) {
+        print(7)
+    }
+    
+    if (length(grep(penalty_regex, pbp, perl=TRUE, fixed=FALSE))>0) {
+        
+    }
+    if (length(grep(fumble_regex, pbp, perl=TRUE, fixed=FALSE))>0) {
+        
+    }
+    
+    play_table = cbind(play_table, this)
 }
-    
-    
-    
-    
+
+
+
+
