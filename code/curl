@@ -1,0 +1,7 @@
+theurl = "http://scores.espn.go.com/ncf/playbyplay?gameId=332430275&period=0"
+webpage <- getURL(theurl)
+webpage <- readLines(tc <- textConnection(webpage)); close(tc)
+
+pagetree <- htmlTreeParse(webpage, asText=TRUE, useInternalNodes = TRUE)
+pbp_table <- xpathSApply(pagetree, "//table[contains(@class,'mod-pbp')]/tbody/tr/td[not(contains(@class, 'bi'))] | //table[contains(@class, 'mod-data')]/thead/tr/td | //table[contains(@class,'mod-pbp')]/thead/tr/th[@colspan='3']", xmlValue)
+
