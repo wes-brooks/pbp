@@ -23,8 +23,14 @@ regex = function(pattern, str, perl=TRUE, fixed=FALSE, ignore.case=TRUE) {
             length = lengths[j,capt]
             
             #Uncaptured groups are returned NA.
-            if (length==0) {row = c(row, NA)}
-            else {row = c(row, substr(str, start, start+length-1))}
+            if (length<=0) {row = c(row, NA)}
+            else {
+                #Remove leading and trailing whitespace:
+                item = substr(str, start, start+length-1)
+                item = gsub("[\\s\\.]*$","", item, perl=TRUE)
+                item = gsub("^[\\s\\.]*","", item, perl=TRUE)
+                row = c(row, item)
+            }
         }
         
         #Add this match to the table
@@ -33,5 +39,5 @@ regex = function(pattern, str, perl=TRUE, fixed=FALSE, ignore.case=TRUE) {
     
     #Annotate the table and return it
     colnames(result) = capts
-    return(list(result=result, raw=match))
+    return(result)
 }

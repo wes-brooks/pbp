@@ -33,7 +33,8 @@ for (k in 1:4) {
 drives = list()
 for (k in 1:4) {
     #Begin by identifying the beginning of each drive:
-    drivebreaks = grep("(?<team>[A-Za-z ]+) at (?<min>\\d{1,2}):(?<sec>\\d\\d)", quarter_pbp[[k]], perl=TRUE, fixed=FALSE, ignore.case=TRUE)
+    drivebreaks = grep("(?<team>[A-Za-z ]+) at (?<min>\\d{1,2}):(?<sec>\\d\\d)",
+        quarter_pbp[[k]], perl=TRUE, fixed=FALSE, ignore.case=TRUE)
     
     for (j in 1:length(drivebreaks)) {
         head = quarter_pbp[[k]][drivebreaks[j]] 
@@ -61,7 +62,7 @@ for (k in 1:4) {
         #If this is a new drive then add it to the list.
         else {drives[[i+1]] = list(team=teamname, time=time, pbp=drive_pbp)}        
 
-        #Use the beginning time of this drive to compute the duration of the previous drive:
+        #Calculate the duration of the previous drive:
         if (i>0) {drives[[i]][['duration']] = drives[[i]][['time']] - time}
     }
 }
@@ -78,13 +79,17 @@ plays = list()
 for (k in 1:length(drives)) {
     #Break the drive into plays:
     nplay = (length(drives[[k]][['pbp']])-1) %/% 2
-    playmeta_regex = "(?<down>1st|2nd|3rd|4th|1ST|2ND|3RD|4TH) (and|AND) (?<togo>\\d{1,2}|goal|Goal|GOAL) at (?<field>[A-Za-z]{3,4}) (?<yardline>\\d{1,2})" 
+    playmeta_regex = paste("(?<down>1st|2nd|3rd|4th|1ST|2ND|3RD|4TH) (and|AND) ",
+        "(?<togo>\\d{1,2}|goal|Goal|GOAL) at (?<field>[A-Za-z]{3,4}) "
+        "(?<yardline>\\d{1,2})", sep='')
 
     for (j in 1:nplay) {
-        playmeta = regex(playmeta_regex, drives[[k]][['pbp']][2*j], perl=TRUE, fixed=FALSE, ignore.case=TRUE)
+        playmeta = regex(playmeta_regex, drives[[k]][['pbp']][2*j],
+            perl=TRUE, fixed=FALSE, ignore.case=TRUE)
     
         #Get the play-by-play HTML for this play.
-        pbp = drives[[k]][['pbp']][2*j+1] #substr(drives[[k]][['pbp']], playbreaks[['raw']][j], end)
+        pbp = drives[[k]][['pbp']][2*j+1] #substr(drives[[k]][['pbp']],
+            playbreaks[['raw']][j], end)
 
         ###Play-level metadata:
         down = playmeta[1,'down']
@@ -121,24 +126,44 @@ for (k in 1:length(drives)) {
         }        
         
         #Add this play to the list
-        plays[[length(plays)+1]] = list(poss=drives[[k]][['team']], down=down, togo=togo, time=time, dist=dist, pbp=pbp)
+        plays[[length(plays)+1]] = list(poss=drives[[k]][['team']], down=down,
+            togo=togo, time=time, dist=dist, pbp=pbp)
     }
 }
 
 #Special teams plays:
-kickoff_regex = "(?<kicker>[-a-zA-Z\\. ']+) kickoff for (?<kickdist>\\d{1,3}) yards? (returned by (?<returner>[-a-zA-Z\\. ']+) for ((?<retgain>\\d{1,3}) yards|(a )?loss of (?<retloss>\\d+) yards?|(?<retnogain>no gain))|.*(?<touchback>touchback)).*"
-punt_regex = "(?<punter>[-a-zA-Z\\. ']+) punt for (?<kickdist>\\d{1,3}) yards?(.*(?<touchback>touchback).*|.*out[- ]of[- ]bounds at|.*fair catch by (?<catcher>[-a-zA-Z\\. ']+) at|.*returned by (?<returner>[-a-zA-Z\\. ']+) (for ((?<retgain>\\d{1,3}) yards|(a )?loss of (?<retloss>\\d+) yards?|(?<retnogain>no gain)))?)?"
-fg_regex = "(?<kicker>[-a-zA-Z\\. ']+) (?<kickdist>\\d{1,3}) yards? field goal (?<made>GOOD|MADE)|(?<missed>MISSED|NO GOOD).*"
-pat_regex = "(?<kicker>[-a-zA-Z\\. ']+) extra point (?<made>GOOD|MADE)|(?<missed>MISSED|NO GOOD)"
+kickoff_regex = paste("(?<kicker>[-a-zA-Z\\. ']+) kickoff for (?<kickdist>\\d{1,3}) ",
+    "yards? (returned by (?<returner>[-a-zA-Z\\. ']+) for ((?<retgain>\\d{1,3}) ",
+    "yards|(a )?loss of (?<retloss>\\d+) yards?|(?<retnogain>no gain))",
+    "|.*(?<touchback>touchback)).*", sep='')
+punt_regex = paste("(?<punter>[-a-zA-Z\\. ']+) punt for (?<kickdist>\\d{1,3}) ",
+    "yards?(.*(?<touchback>touchback).*|.*out[- ]of[- ]bounds at|.*fair catch by ",
+    "(?<catcher>[-a-zA-Z\\. ']+) at|.*returned by (?<returner>[-a-zA-Z\\. ']+) ",
+    "(for ((?<retgain>\\d{1,3}) yards|(a )?loss of (?<retloss>\\d+) ",
+    "yards?|(?<retnogain>no gain)))?)?", sep='')
+fg_regex = paste("(?<kicker>[-a-zA-Z\\. ']+) (?<kickdist>\\d{1,3}) yards? field goal ",
+    "(?<made>GOOD|MADE)|(?<missed>MISSED|NO GOOD).*", sep='')
+pat_regex = paste("(?<kicker>[-a-zA-Z\\. ']+) extra point ",
+    "(?<made>GOOD|MADE)|(?<missed>MISSED|NO GOOD)", sep='')
 
 #Scrimmage plays
-rush_regex = "(?<player>[-a-zA-Z\\. ']+) rush [\\s\\w]*for ((?<gain>\\d+) yards?|(a )?loss of (?<loss>\\d+) yards?|(?<nogain>no gain))"
-pass_regex = "(?<QB>[-a-zA-Z\\. ']+) pass (((?<complete>complete)|(?<incomplete>incomplete))( to (?<receiver>[-a-zA-Z\\. ']+).*(?(complete) for ((?<gain>\\d+) yards?|(a )?loss of (?<loss>\\d+) yards?|(?<nogain>no gain))))?)?"
+rush_regex = paste("(?<player>[-a-zA-Z\\. ']+) rush [\\s\\w]*for ((?<gain>\\d+) ",
+    "yards?|(a )?loss of (?<loss>\\d+) yards?|(?<nogain>no gain))", sep='')
+pass_regex = paste("(?<QB>[-a-zA-Z\\. ']+) pass (((?<complete>complete)|",
+    "(?<incomplete>incomplete))( to (?<receiver>[-a-zA-Z\\. ']+).*(?(complete) for ",
+    "((?<gain>\\d+) yards?|(a )?loss of (?<loss>\\d+) yards?|",
+    "(?<nogain>no gain))))?)?", sep='')
 
 #Turnovers/timeouts/penalties:
-fumble_regex = "fumbled?.*(forced by (?<forcer>[-a-zA-Z\\. ']+))?.*(recovered by (?<team>[a-zA-Z]+) (?<recoverer>[-a-zA-Z\\. ']+))?"
-interception_regex = "intercept(ed|ion)? by (?<intercepter>[-a-zA-Z\\. ']+) at (the )?(?<side>[a-zA-Z]+) (?<yardline>\\d{1,2})[\\.,]?( returned for ((?<retgain>\\d{1,3}) yards|(a )?loss of (?<retloss>\\d+) yards?|(?<retnogain>no gain)))?"
-penalty_regex = "(?<team>[-a-zA-Z\\. ']+) penalty (?<dist>\\d{1,3}) yards? (?<penalty>[-a-zA-Z\\. ']+)( on (?<player>[-a-zA-Z\\. ']+))? (?<decision>accepted|declined)"
+fumble_regex = paste("fumbled?.*(forced by (?<forcer>[-a-zA-Z\\. ']+))?.*",
+    "(recovered by (?<team>[a-zA-Z]+) (?<recoverer>[-a-zA-Z\\. ']+))?", sep='')
+interception_regex = paste("intercept(ed|ion)? by (?<intercepter>[-a-zA-Z\\. ']+) ",
+    "at (the )?(?<side>[a-zA-Z]+) (?<yardline>\\d{1,2})[\\.,]?( returned for ",
+    "((?<retgain>\\d{1,3}) yards|(a )?loss of (?<retloss>\\d+) ",
+    "yards?|(?<retnogain>no gain)))?", sep='')
+penalty_regex = paste("(?<team>[-a-zA-Z\\. ']+) penalty (?<dist>\\d{1,3}) yards? ",
+    "(?<penalty>[-a-zA-Z\\. ']+)( on (?<player>[-a-zA-Z\\. ']+))? ",
+    "(?<decision>accepted|declined)", sep='')
 timeout_regex = "Timeout (?<team>[-a-zA-Z\\. ']+).* (?<min>\\d{1,2})?:(?<sec>\\d\\d)"
 
 #Results:
