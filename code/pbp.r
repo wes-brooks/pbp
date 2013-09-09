@@ -11,7 +11,6 @@ pbp <- xpathSApply(tree, paste(
     "//table[contains(@class,'mod-pbp')]/child::thead/tr/th[1]",
     "//table[contains(@class,'mod-pbp')]/child::thead/tr/td", sep=" | "), xmlValue) 
 
-
 #Quarter breaks:
 quarters = c('1st', '2nd', '3rd', '4th')
 starts = sapply(quarters, function(x) {paste(x, "Quarter Play by Play")})
@@ -80,7 +79,7 @@ for (k in 1:length(drives)) {
     #Break the drive into plays:
     nplay = (length(drives[[k]][['pbp']])-1) %/% 2
     playmeta_regex = paste("(?<down>1st|2nd|3rd|4th|1ST|2ND|3RD|4TH) (and|AND) ",
-        "(?<togo>\\d{1,2}|goal|Goal|GOAL) at (?<field>[A-Za-z]{3,4}) "
+        "(?<togo>\\d{1,2}|goal|Goal|GOAL) at (?<field>[A-Za-z]{3,4}) ",
         "(?<yardline>\\d{1,2})", sep='')
 
     for (j in 1:nplay) {
@@ -88,8 +87,7 @@ for (k in 1:length(drives)) {
             perl=TRUE, fixed=FALSE, ignore.case=TRUE)
     
         #Get the play-by-play HTML for this play.
-        pbp = drives[[k]][['pbp']][2*j+1] #substr(drives[[k]][['pbp']],
-            playbreaks[['raw']][j], end)
+        pbp = drives[[k]][['pbp']][2*j+1]
 
         ###Play-level metadata:
         down = playmeta[1,'down']
@@ -139,7 +137,7 @@ kickoff_regex = paste("(?<kicker>[-a-zA-Z\\. ']+) kickoff for (?<kickdist>\\d{1,
 punt_regex = paste("(?<punter>[-a-zA-Z\\. ']+) punt for (?<kickdist>\\d{1,3}) ",
     "yards?(.*(?<touchback>touchback).*|.*out[- ]of[- ]bounds at|.*fair catch by ",
     "(?<catcher>[-a-zA-Z\\. ']+) at|.*returned by (?<returner>[-a-zA-Z\\. ']+) ",
-    "(for ((?<retgain>\\d{1,3}) yards|(a )?loss of (?<retloss>\\d+) ",
+    "for (((?<retgain>\\d{1,3}) yards|(a )?loss of (?<retloss>\\d+) ",
     "yards?|(?<retnogain>no gain)))?)?", sep='')
 fg_regex = paste("(?<kicker>[-a-zA-Z\\. ']+) (?<kickdist>\\d{1,3}) yards? field goal ",
     "(?<made>GOOD|MADE)|(?<missed>MISSED|NO GOOD).*", sep='')
