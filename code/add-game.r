@@ -1,4 +1,4 @@
-InitializePbpDb = function(dbfile="~/git/pbp/db/pbp_db.sqlite", tables) {
+AddGame = function(dbfile="~/git/pbp/db/pbp_db.sqlite", tables) {
     #Connect to the database
     drv <- dbDriver("SQLite")
     con = dbConnect(drv, dbfile)
