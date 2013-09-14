@@ -1,0 +1,20 @@
+#Extract the teams from the HTML
+#Check whether teams are in the teams table of the db
+#If not, add them to the table
+#Get their IDs
+
+#Replace the teams in the game data.frame with the IDs
+#Add the game to the games table of the db
+#Get the game's ID
+
+#Add the game ID to each drive
+#Indicate the half of each drive
+#Add the drive to the drives table of the db
+#Get the ID of the drive
+
+#Add the drive ID to each play
+#Add the game half to each play
+#Add each play to the plays table of the db
+
+
+

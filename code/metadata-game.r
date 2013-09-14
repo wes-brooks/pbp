@@ -19,12 +19,12 @@ GameMetadata = function(url) {
 
 
     #What season is this?
-    year = tail(strsplit(gamemeta[['datetime']], '\\s'), 1)
+    year = tail(strsplit(gamemeta[['datetime']], '\\s')[[1]], 1)
     month = tail(strsplit(gamemeta[['datetime']], '\\s'), 3)
     if (tolower(month) %in% tolower(c("January", "February"))){
         season = as.numeric(year) - 1
     } else {season = as.numeric(year)}
-    gamemeata[['season']] = season
+    gamemeta[['season']] = season
 
 
     #What week of the season for each team?

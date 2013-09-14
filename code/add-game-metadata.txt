@@ -1,0 +1,11 @@
+#Extract the teams from the HTML
+#Check whether teams are in the teams table of the db
+#If not, add them to the table
+#Get their IDs
+
+#Replace the teams in the game data.frame with the IDs
+#Add the game to the games table of the db
+#Get the game's ID
+
+
+

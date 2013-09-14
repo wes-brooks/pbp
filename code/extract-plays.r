@@ -55,7 +55,12 @@ ExtractPlays = function(url) {
             }
 
             #If this is a new drive then add it to the list.
-            else {drives[[i+1]] = list(team=teamname, time=time, pbp=drive_pbp)}        
+            else {
+                drives[[i+1]] = list(team=teamname, time=time, pbp=drive_pbp)
+            
+                #Indicate the half
+                drives[[i+1]][['half']] = ifelse(k %in% c(1,2), 1, 2)
+            }
 
             #Calculate the duration of the previous drive:
             if (i>0) {drives[[i]][['duration']] = drives[[i]][['time']] - time}
