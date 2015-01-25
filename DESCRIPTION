@@ -1,0 +1,12 @@
+Package: pbp
+Title: Scrape college football play-by-play data from the ESPN website
+Description: Scrapes college football play-by-play data from the ESPN website
+Version: 0.1
+Author: Wesley Brooks <brooks.wesley@gmail.com>
+Maintainer: Wesley Brooks <brooks.wesley@gmail.com>
+License: MIT
+Depends:
+    R (>= 3.1.1),
+    XML,
+    RCurl,
+    RSQLite

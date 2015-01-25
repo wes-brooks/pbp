@@ -1,3 +1,4 @@
+#@' export
 GameMetadata = function(url) {
     tree <- htmlTreeParse(url, isURL=TRUE, useInternalNodes=TRUE)
 
