@@ -1,3 +1,12 @@
+#' Scrape a game's play-by-play data
+#'
+#' Connects the the given \code{url}, scrapes the play-by-play data, and interprets it as football plays.
+#'
+#' @param url url of the website containing the data to parse, provided as a string
+#' @return A \code{data.table} representing each play of the game as one row.
+#' @examples
+#' plays = ParsePlays("http://espn.go.com/ncf/playbyplay?gameId=400610325&period=0")
+#' 
 #' @export
 ParsePlays = function(url) {
 

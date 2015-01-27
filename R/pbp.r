@@ -1,3 +1,15 @@
+#' Scrape the Web for college football play-by-play data
+#'
+#' \package{pbp} allows you to scrape the ESPN website 
+#' for college football play-by-play data, which you can then analyze in R.
+#'
+#' The only function you're likely to need from \pkg{pbp} is
+#' \code{\link{ParsePlays}}.
+#'
+#' @docType package
+#' @name roxygen2
+NULL
+
 #Load the raw data and extract the part including 'mod-pbp', the play-by-play module.
 #library(RCurl)
 #library(XML)
