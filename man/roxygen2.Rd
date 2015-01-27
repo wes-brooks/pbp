@@ -6,7 +6,7 @@
 \alias{roxygen2-package}
 \title{Scrape the Web for college football play-by-play data}
 \description{
-\package{pbp} allows you to scrape the ESPN website
+\pkg{pbp} allows you to scrape the ESPN website
 for college football play-by-play data, which you can then analyze in R.
 }
 \details{
