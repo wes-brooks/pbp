@@ -4,7 +4,7 @@
 #' for college football play-by-play data, which you can then analyze in R.
 #'
 #' The only function you're likely to need from \pkg{pbp} is
-#' \code{\link{ParsePlays}}.
+#' \code{\link{parse.url}}.
 #'
 #' @docType package
 #' @name roxygen2
