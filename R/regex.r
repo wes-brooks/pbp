@@ -1,4 +1,4 @@
-regex = function(pattern, str, perl=TRUE, fixed=FALSE, ignore.case=TRUE) {
+regex <- function(pattern, str, perl=TRUE, fixed=FALSE, ignore.case=TRUE) {
     #Process the regex
     match = gregexpr(pattern, str, perl=perl, fixed=fixed, ignore.case=ignore.case)[[1]]
     
@@ -8,7 +8,7 @@ regex = function(pattern, str, perl=TRUE, fixed=FALSE, ignore.case=TRUE) {
     lengths = attr(match, 'capture.length')
     
     #Remove unnamed captures:
-    capts = capts[capts!=""]
+    capts = capts[capts != ""]
     
     #Initialize the table of results
     result = matrix(NA, nrow=0, ncol=length(capts))
