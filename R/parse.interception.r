@@ -3,7 +3,7 @@ parse.interception = function(pbp, play) {
     play$intercepter = NA
     play$int_return = NA
 
-    interception_regex = paste("intercept(ed|ion)? by (?<intercepter>[-a-zA-Z\\. ']+) ",
+    interception_regex = paste("intercept(ed|ion)? by (?<intercepter>[-a-zA-Z,\\. ']+) ",
         "at (the )?(?<side>[a-zA-Z]+) (?<yardline>\\d{1,2})[\\.,]?( returned for ",
         "((?<retgain>\\d{1,3}) (yd|yard)s?|(a )?loss of (?<retloss>\\d+) ",
         "(yd|yard)s?|(?<retnogain>no gain)))?", sep='')    
@@ -13,7 +13,7 @@ parse.interception = function(pbp, play) {
         play$pass = TRUE
         play$INT = TRUE
         play$complete = FALSE
-        play$intercepter = match[1,'intercepter']
+        play$intercepter = format.name(match[1,'intercepter'])
     
         if (!is.na(match[1,'retgain'])) {play$int_return = as.numeric(match[1,'retgain'])}
         else if (!is.na(match[1,'retloss'])) {play$int_return = -as.numeric(match[1,'retloss'])}
