@@ -8,8 +8,8 @@ parse.penalty = function(play, meta) {
     pbp <- play$pbp
     team.pattern <- paste(meta$home.school, meta$home.abbrev, meta$away.school, meta$away.abbrev, sep='|')
     
-    penalty_regex0 = paste0("(?<team>", team.pattern, ") penalty,? ( \\(?-?(?<dist>\\d{1,3}) (yd|yard)s?\\)? ",
-        "(?<penalty>[-a-zA-Z\\. ']+)?(( on)? \\(?(?<player>", name.pattern, ")\\)?)? ",
+    penalty_regex0 = paste0("(?<team>", team.pattern, ") penalty,? (\\(?-?(?<dist>\\d{1,3}) (yd|yard)s?\\)? ",
+        "(?<penalty>[-a-zA-Z\\. ']+?)?( on \\(?(?<player>", name.pattern, ")\\)?)? ",
         "(?<decision>accepted|declined))?")
     
     penalty_regex = paste0("(?<team>", team.pattern, ") penalty,? (?<penalty>[-a-zA-Z\\. ']+) \\(-?(?<dist>\\d{1,3}) (yd|yard)s?\\)",
