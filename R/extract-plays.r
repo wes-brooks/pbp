@@ -45,9 +45,9 @@ ExtractPlays <- function(url) {
       indx.drives <- 1:ndrives
     } else indx.drives <- (1:ndrives)[-halftime]
     
-    # scores after each drive
-    drive.score.away <- as.integer(xpathSApply(tree, "//article[contains(@class, 'play-by-play')]/descendant::span[contains(@class, 'away')]/span[contains(@class,'team-score')]", xmlValue))
-    drive.score.home <- as.integer(xpathSApply(tree, "//article[contains(@class, 'play-by-play')]/descendant::span[contains(@class, 'home')]/span[contains(@class,'team-score')]", xmlValue))
+    # scores after each drive. ESPN's presentation has the ID of home/away reversed in the score column.
+    drive.score.away <- as.integer(xpathSApply(tree, "//article[contains(@class, 'play-by-play')]/descendant::span[contains(@class, 'home')]/span[contains(@class,'team-score')]", xmlValue))
+    drive.score.home <- as.integer(xpathSApply(tree, "//article[contains(@class, 'play-by-play')]/descendant::span[contains(@class, 'away')]/span[contains(@class,'team-score')]", xmlValue))
     
     drives <- list()
     
@@ -118,11 +118,11 @@ ExtractPlays <- function(url) {
       
       # get the home and away scores during this drive
       if (i == 1) {
-        this.drive$home.score <- 0
-        this.drive$away.score <- 0
+        this.drive$plays$score.home <- this.drive$home.score <- 0
+        this.drive$plays$score.away <- this.drive$away.score <- 0
       } else {
-        this.drive$home.score <- drive.score.home[which(indx.drives == i) - 1]
-        this.drive$away.score <- drive.score.away[which(indx.drives == i) - 1]
+        this.drive$plays$score.home <- this.drive$home.score <- drive.score.home[which(indx.drives == i) - 1]
+        this.drive$plays$score.away <- this.drive$away.score <- drive.score.away[which(indx.drives == i) - 1]
       }
       
       # attach metadata to the play table
