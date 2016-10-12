@@ -24,20 +24,11 @@ parse.url <- function(url) {
 
     for (k in 1:nrow(plays)) {
         #Get the already-established metadata:
-        # play = list()
-        # play$poss = plays[[k]]$poss
-        # play$def = plays[[k]]$def
-        # play$time = plays[[k]]$time
-        # play$down = plays[[k]]$down
-        # play$togo = plays[[k]]$togo
-        # play$dist = plays[[k]]$dist
-        # play$drive = plays[[k]]$drive
-        # play$playnum = plays[[k]]$playnum
         play <- plays[k,]
-        play$carrier = NA
-        play$gain = NA
+        play$carrier <- NA
+        play$gain <- NA
 
-        pbp = play$pbp
+        pbp <- play$pbp
         
         play <- parse.rush(pbp, play)
         play <- parse.pass(pbp, play)
@@ -47,12 +38,12 @@ parse.url <- function(url) {
         
         #Fumbles, penalties, touchdowns, first downs can happen on any play:
         play <- parse.sack(pbp, play)
-        play = parse.penalty(play, meta)
-        play = parse.fumble(pbp, play)
-        play = parse.touchdown(pbp, play)
-        play = parse.special(pbp, play)
-        play = parse.first.down(pbp, play)
-        play = parse.interception(pbp, play)
+        play <- parse.penalty(play, meta)
+        play <- parse.fumble(play, meta)
+        play <- parse.touchdown(pbp, play)
+        play <- parse.special(pbp, play)
+        play <- parse.first.down(pbp, play)
+        play <- parse.interception(pbp, play)
         
         #Put scores in the table
         play$margin <- play$score.offense - play$score.defense
