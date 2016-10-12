@@ -8,40 +8,46 @@
 #' plays = parse.url("http://espn.go.com/ncf/playbyplay?gameId=400610325&period=0")
 #' 
 #' @export
-parse.url = function(url) {
-
-    pbp = ExtractPlays(url)
-    
-    plays = pbp$plays
-    scores = pbp$scores
-    teams = colnames(pbp$scores)
-
+parse.url <- function(url) {
+    SaF <- options('stringsAsFactors')$stringsAsFactors
     options(stringsAsFactors = FALSE)
+    
+    data <- ExtractPlays(url)
+    meta <- data$meta
+    
+    plays <- do.call('rbind', sapply(data$drives, function(x) x$plays, simplify=FALSE))
+    # scores = pbp$scores
+    # teams = colnames(pbp$scores)
+
     play_table = data.frame()
     raw_pbp = vector()
 
-    for (k in 1:length(plays)) {
+    for (k in 1:nrow(plays)) {
         #Get the already-established metadata:
-        play = list()
-        play$poss = plays[[k]]$poss
-        play$def = plays[[k]]$def
-        play$time = plays[[k]]$time
-        play$down = plays[[k]]$down
-        play$togo = plays[[k]]$togo
-        play$dist = plays[[k]]$dist
-        play$drive = plays[[k]]$drive
-        play$playnum = plays[[k]]$playnum
+        # play = list()
+        # play$poss = plays[[k]]$poss
+        # play$def = plays[[k]]$def
+        # play$time = plays[[k]]$time
+        # play$down = plays[[k]]$down
+        # play$togo = plays[[k]]$togo
+        # play$dist = plays[[k]]$dist
+        # play$drive = plays[[k]]$drive
+        # play$playnum = plays[[k]]$playnum
+        play <- plays[k,]
         play$carrier = NA
         play$gain = NA
 
-        pbp = plays[[k]]$pbp
+        pbp = play$pbp
         
-        play = parse.rush(pbp, play)
-        play = parse.pass(pbp, play)
-        play = parse.timeout(pbp, play)
+        play <- parse.rush(pbp, play)
+        play <- parse.pass(pbp, play)
+        play <- parse.timeout(pbp, play)
     
+        
+        
         #Fumbles, penalties, touchdowns, first downs can happen on any play:
-        play = parse.penalty(pbp, play)
+        play <- parse.sack(pbp, play)
+        play = parse.penalty(play, meta)
         play = parse.fumble(pbp, play)
         play = parse.touchdown(pbp, play)
         play = parse.special(pbp, play)
@@ -49,12 +55,9 @@ parse.url = function(url) {
         play = parse.interception(pbp, play)
         
         #Put scores in the table
-        play$margin = scores[k, play$poss] - scores[k, play$def]
-        play$away = scores[k,1]
-        play$home = scores[k,2]
-        play$pbp = pbp
-    
-        play_table = rbind(play_table, play)
+        play$margin <- play$score.offense - play$score.defense
+        
+        play_table <- rbind(play_table, play)
     }
     
     #Sacks should count against passing, not rushing. Consider anyone who threw at least two passes a QB:
@@ -66,19 +69,18 @@ parse.url = function(url) {
     }
         
     #Now any non-positive rush for a QB should be a sack.
-    play_table$sack = FALSE
-    sack_indx = which(play_table$rush & play_table$gain<=0 & play_table$carrier %in% QBs)
-    play_table$rush[sack_indx] = FALSE
-    play_table$pass[sack_indx] = TRUE
-    play_table$complete[sack_indx] = FALSE
-    play_table$sack[sack_indx] = TRUE
-    play_table$passer[sack_indx] = play_table$carrier[sack_indx]
+    sack_indx <- (play_table$rush & play_table$gain<=0 & play_table$carrier %in% QBs)
+    play_table$rush[sack_indx] <- FALSE
+    play_table$pass[sack_indx] <- TRUE
+    play_table$complete[sack_indx] <- FALSE
+    play_table$sack[sack_indx] <- TRUE
+    play_table$passer[sack_indx] <- play_table$carrier[sack_indx]
     
     #Remove kickoffs, penalties, and other non-scrimmage plays from play numbering.
-    scrimmage = which(play_table$rush | play_table$pass | play_table$FG | play_table$punt)
-    PAT_play = which(play_table$PAT & !play_table$TD)
-    play_table$playnum[-scrimmage] = NA
-    play_table$playnum[PAT_play] = NA
+    scrimmage <- (play_table$rush | play_table$pass | play_table$FG | play_table$punt)
+    PAT_play <- (play_table$PAT & !play_table$TD)
+    play_table$playnum[-scrimmage] <- NA
+    play_table$playnum[PAT_play] <- NA
     
     #Also make kickoffs the first play of the ensuing drive.
     koind = which(play_table$kickoff)
@@ -94,7 +96,7 @@ parse.url = function(url) {
     }
     
     #If a play has no down and distance, see if we can correct it:
-    missing = which((play_table$rush | play_table$pass | play_table$FG | play_table$punt) & is.na(play_table$down))
+    missing <- ((play_table$rush | play_table$pass | play_table$FG | play_table$punt) & is.na(play_table$down))
     for (m in missing) {
         if (m>1) {
             if (play_table$timeout[m-1] | play_table$penalty[m-1]) {
@@ -104,6 +106,15 @@ parse.url = function(url) {
             }
         }
     }
+    
+    # If penalty yards weren't acquired form the pbp code, impute them:
+    indx <- play_table$penalty &
+      is.na(play_table$penalty_dist) & 
+      is.na(play_table$gain) & 
+      play_table$poss == play_table$poss[c(2:nrow(play_table), nrow(play_table))] &
+      play_table$half == play_table$half[c(2:nrow(play_table), nrow(play_table))]
+    indx <- head(indx, length(indx) - 1) # don't bother with the final play of the game
+    play_table$penalty_dist[indx] <- abs(play_table$dist[c(2:nrow(play_table), nrow(play_table))] - play_table$dist)[indx]
     
     return(play_table)
 }
