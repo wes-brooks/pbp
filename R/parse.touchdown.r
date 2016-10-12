@@ -1,7 +1,7 @@
 parse.touchdown = function(pbp, play) {
     play$TD = FALSE
     
-    td_regex = "(?<touchdown>touchdown)|(\\((?<kicker>[-a-zA-Z\\. ']+) kick\\))"
+    td_regex = "(?<touchdown>touchdown|TD)"
     
     if (grepl(td_regex, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
         play$TD = TRUE
