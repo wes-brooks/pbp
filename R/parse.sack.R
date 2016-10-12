@@ -2,8 +2,8 @@ parse.sack <- function(pbp, play) {
   play$sack <- FALSE
   play$sack.credit <- NA
   
-  sack_regex1 <- paste("(?<passer>[-a-zA-Z,\\. ']+) (sack|sacked)( by (?<sackcredit>[-a-zA-Z,\\. ']+))? for ((?<gain>\\d+) ",
-                      "(yd|yard)s?|(a )?loss of (?<loss>\\d+) (yd|yard)s?|(?<nogain>no gain))", sep='')
+  sack_regex1 <- paste0("(?<passer>", name.pattern, ") (sack|sacked)( by (?<sackcredit>", name.pattern, "))? for ((?<gain>\\d+) ",
+                      "(yd|yard)s?|(a )?loss of (?<loss>\\d+) (yd|yard)s?|(?<nogain>no gain))")
   # sack_regex2 = "(?<passer>[-a-zA-Z\\. ']+) (?<gain>\\d+) (yd|yard)s? (sacked|sack)"
   
   if (grepl(sack_regex1, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {

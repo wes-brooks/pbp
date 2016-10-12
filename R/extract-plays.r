@@ -4,14 +4,6 @@ ExtractPlays <- function(url) {
     #Make sure to label the scores properly:
     costs <- list(insertions=2, deletions=0, substitutions=1)
     
-    # pbp <- xpathSApply(tree, paste(
-    #     "//table[contains(@class,'mod-pbp')]/child::tr/td[position()<3]",
-    #     "//table[contains(@class,'mod-pbp')]/child::tbody/tr/child::td[position()<3]",
-    #     "//table[contains(@class,'mod-pbp')]/child::thead/tr/th[1]",
-    #     "//table[contains(@class,'mod-pbp')]/child::thead/tr/td", sep=" | "), xmlValue) 
-
-    # pbp <- xpathSApply(tree, "//article[contains(@class, 'play-by-play')]/descendant::ul[contains(@class, 'drive-list')]", xmlValue)
-    
     img.id.regex <- "\\/(?<id>[^\\/]+)\\.png"
     meta <- list()
     
@@ -29,9 +21,10 @@ ExtractPlays <- function(url) {
     meta$away.abbrev <- away.abbrev <- xmlValue(getNodeSet(tree, "//div[contains(@class, 'competitors')]/div[contains(@class, 'team') and contains(@class, 'away')]/descendant::span[contains(@class, 'abbrev')]")[[1]])
     meta$away.score <- away.score <- as.integer(xmlValue(getNodeSet(tree, "//div[contains(@class, 'competitors')]/div[contains(@class, 'team') and contains(@class, 'away')]/descendant::div[contains(@class, 'score')]")[[1]]))
     
+    team.patterns <- paste(meta$home.school, meta$home.abbrev, meta$away.school, meta$away.abbrev, sep='|')
     
     playmeta.regex = paste0("^(?<down>1st|2nd|3rd|4th|1ST|2ND|3RD|4TH) (and|AND) ",
-                            "(?<togo>\\d{1,2}|goal|Goal|GOAL) at (?<field>[A-Za-z]{2,4})? ?",
+                            "(?<togo>\\d{1,2}|goal|Goal|GOAL) at (?<field>", team.patterns, ")? ?",
                             "(?<yardline>\\d{1,2})$")
     
     postplay.regex <- "^\\(((?<OT>OT)|(?<min>\\d{1,2}):(?<sec>\\d\\d)\\s*-\\s*(?<quarter>1st|2nd|3rd|4th|1ST|2ND|3RD|4TH))\\)\\s(?<pbp>.*)\\s*$"

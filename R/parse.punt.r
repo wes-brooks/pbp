@@ -2,11 +2,11 @@ parse.punt <- function(pbp, play) {
     play$punt <- FALSE
     play$faircatch <- NA
 
-    punt_regex <- paste("(?<punter>[-a-zA-Z,\\. ']+) punt for (?<kickdist>\\d{1,3}) ",
+    punt_regex <- paste0("(?<punter>", name.pattern, ") punt for (?<kickdist>\\d{1,3}) ",
         "(yd|yard)s?(.*(?<touchback>touchback).*|.*out[- ]of[- ]bounds at|.*fair catch by ",
-        "(?<catcher>[-a-zA-Z,\\. ']+) at|.*returned by (?<returner>[-a-zA-Z,\\. ']+) ",
+        "(?<catcher>", name.pattern, ") at|.*returned by (?<returner>", name.pattern, ") ",
         "for (((?<retgain>\\d{1,3}) (yd|yard)s|(a )?loss of (?<retloss>\\d+) ",
-        "(yd|yard)s?|(?<retnogain>no gain)))?)?", sep='')
+        "(yd|yard)s?|(?<retnogain>no gain)))?)?")
 
     if (grepl(punt_regex, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
         match <- regex(punt_regex, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)

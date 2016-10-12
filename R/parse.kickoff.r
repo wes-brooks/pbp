@@ -3,8 +3,8 @@
 parse.kickoff = function(pbp, play) {
     play$kickoff = FALSE
 
-    kickoff_regex = paste("(?<kicker>[-a-zA-Z,\\. ']+) kickoff for (?<kickdist>\\d{1,3}) ",
-        "(yd|yard)s?\\s?,? (((?<returner1>[-a-zA-Z,\\. ']+) return|returned by (?<returner2>[-a-zA-Z,\\. ']+)) for ((?<retgain>\\d{1,3}) ",
+    kickoff_regex = paste("(?<kicker>", name.pattern, ") kickoff for (?<kickdist>\\d{1,3}) ",
+        "(yd|yard)s?\\s?,? (((?<returner1>", name.pattern, ") return|returned by (?<returner2>", name.pattern, ")) for ((?<retgain>\\d{1,3}) ",
         "(yd|yard)s?|(a )?loss of (?<retloss>\\d+) (yd|yard)s?|(?<retnogain>no gain))",
         "|.*(?<touchback>touchback))?", sep='')
         

@@ -3,12 +3,12 @@ parse.pass = function(pbp, play) {
     play$complete = NA
     play$passer = NA
 
-    pass_regex1 = paste("(?<QB>[-a-zA-Z,\\. ']+) pass ((?<complete>complete)|",
-        "(?<incomplete>incomplete))(( to (?<receiver>[-a-zA-Z,\\. ']+).*(?(complete) for ",
+    pass_regex1 = paste0("(?<QB>", name.pattern, ") pass ((?<complete>complete)|",
+        "(?<incomplete>incomplete))(( to (?<receiver>",name.pattern, ").*(?(complete) for ",
         "((?<gain>\\d+) (yd|yard)s?|(a )?loss of (?<loss>\\d+) (yd|yard)s?|",
         "(?<nogain>no gain))))?)?", sep="")
         
-    pass_regex2 = "(?<receiver>[-a-zA-Z,\\. ']+) ((?<gain>\\d+) (yd|yard)s? )?pass .*from (?<QB>[-a-zA-Z,\\. ']+)"
+    pass_regex2 = paste0("(?<receiver>", name.pattern, ") ((?<gain>\\d+) (yd|yard)s? )?pass .*from (?<QB>", name.pattern, ")")
         
     if (grepl(pass_regex1, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
         match = regex(pass_regex1, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)

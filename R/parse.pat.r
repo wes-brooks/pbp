@@ -1,10 +1,10 @@
 parse.pat = function(pbp, play) {
     play$PAT = FALSE
 
-    # pat_regex1 = paste0("(?<kicker>[-a-zA-Z,\\. ']+)",
+    # pat_regex1 = paste0("(?<kicker>", name.pattern, ")",
     #     " (extra point|KICK|PAT)",
     #     "( (?<made>GOOD|MADE)| (?<missed>MISSED|NO GOOD|BLOCKED))")
-    pat_regex = paste0("(TD|touchdown)[^[:alnum:]]* \\(?(?<kicker>[-a-zA-Z,\\. ']+)",
+    pat_regex = paste0("(TD|touchdown)[^[:alnum:]]* \\(?(?<kicker>", name.pattern, ")",
         " (extra point|KICK|PAT)",
         "( (?<made>GOOD|MADE)| (?<missed>MISSED|NO GOOD|BLOCKED))?\\)?")
 
