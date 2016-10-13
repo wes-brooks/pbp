@@ -70,7 +70,7 @@ parse.url <- function(url) {
     #Remove kickoffs, penalties, and other non-scrimmage plays from play numbering.
     scrimmage <- (play_table$rush | play_table$pass | play_table$FG | play_table$punt)
     PAT_play <- (play_table$PAT & !play_table$TD)
-    play_table$playnum[-scrimmage] <- NA
+    play_table$playnum[!scrimmage] <- NA
     play_table$playnum[PAT_play] <- NA
     
     #Also make kickoffs the first play of the ensuing drive.
@@ -82,8 +82,8 @@ parse.url <- function(url) {
         
     #Correct play numbering:
     for (l in unique(play_table$drive[!is.na(play_table$drive)])) {
-        indx = which(play_table$drive==l & !is.na(play_table$playnum))
-        play_table$playnum[indx] = 1:length(indx)
+        indx = (play_table$drive==l & !is.na(play_table$playnum))
+        play_table$playnum[indx] = 1:sum(indx)
     }
     
     #If a play has no down and distance, see if we can correct it:
