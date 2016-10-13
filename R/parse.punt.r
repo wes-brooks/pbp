@@ -1,4 +1,4 @@
-parse.punt <- function(pbp, play) {
+parse.punt <- function(play) {
     play$punt <- FALSE
     play$faircatch <- NA
 
@@ -8,8 +8,8 @@ parse.punt <- function(pbp, play) {
         "for (((?<retgain>\\d{1,3}) (yd|yard)s|(a )?loss of (?<retloss>\\d+) ",
         "(yd|yard)s?|(?<retnogain>no gain)))?)?")
 
-    if (grepl(punt_regex, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
-        match <- regex(punt_regex, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
+    if (grepl(punt_regex, play$pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
+        match <- regex(punt_regex, play$pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
         play$punt <- TRUE
         play$kicker <- format.name(match[1, 'punter'])
         play$returner <- format.name(match[1,'returner'])

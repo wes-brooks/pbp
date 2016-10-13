@@ -1,31 +1,31 @@
-parse.penalty = function(play, meta) {
-    play$penalty = FALSE
-    play$penalty_type = NA
-    play$penalized_player = NA
-    play$penalty_dist = NA
-    play$penalized_team = NA
+parse.penalty <- function(play, meta) {
+    play$penalty <- FALSE
+    play$penalty_type <- NA
+    play$penalized_player <- NA
+    play$penalty_dist <- NA
+    play$penalized_team <- NA
     
     pbp <- play$pbp
     team.pattern <- paste(meta$home.school, meta$home.abbrev, meta$away.school, meta$away.abbrev, sep='|')
     
-    penalty_regex0 = paste0("(?<team>", team.pattern, ") penalty,? (\\(?-?(?<dist>\\d{1,3}) (yd|yard)s?\\)? ",
+    penalty_regex0 <- paste0("(?<team>", team.pattern, ") penalty,? (\\(?-?(?<dist>\\d{1,3}) (yd|yard)s?\\)? ",
         "(?<penalty>[-a-zA-Z\\. ']+?)?( on \\(?(?<player>", name.pattern, ")\\)?)? ",
         "(?<decision>accepted|declined))?")
     
-    penalty_regex = paste0("(?<team>", team.pattern, ") penalty,? (?<penalty>[-a-zA-Z\\. ']+) \\(-?(?<dist>\\d{1,3}) (yd|yard)s?\\)",
+    penalty_regex <- paste0("(?<team>", team.pattern, ") penalty,? (?<penalty>[-a-zA-Z\\. ']+) \\(-?(?<dist>\\d{1,3}) (yd|yard)s?\\)",
                            "( \\(?(?<player>", name.pattern, ")\\)?)?",
                            "( (?<decision>accepted|declined)?)?")
     
-    penalty_regex2 = paste0("penalty,? (?<team>", team.pattern, ") (?<penalty>[-a-zA-Z\\. ']+) \\(-?(?<dist>\\d{1,3}) (yd|yard)s?\\)",
+    penalty_regex2 <- paste0("penalty,? (?<team>", team.pattern, ") (?<penalty>[-a-zA-Z\\. ']+) \\(-?(?<dist>\\d{1,3}) (yd|yard)s?\\)",
                            "( \\(?(?<player>", name.pattern, ")\\)?)?",
                            "( (?<decision>accepted|declined)?)?")
     
-    penalty_regex3 = paste0("penalty,? (?<team>", team.pattern, ") (?<penalty>[-a-zA-Z\\. ']+)",
+    penalty_regex3 <- paste0("penalty,? (?<team>", team.pattern, ") (?<penalty>[-a-zA-Z\\. ']+)",
                             "( \\(?(?<player>", name.pattern, ")\\)?)?",
                             " \\(?-?(?<dist>\\d{1,3}) (yd|yard)s?\\)?",
                             "( (?<decision>accepted|declined)?)?")
     
-    penalty_regex4 = paste0("(?<team>", team.pattern, ") penalty,? (?<penalty>[-a-zA-Z\\. ']+)",
+    penalty_regex4 <- paste0("(?<team>", team.pattern, ") penalty,? (?<penalty>[-a-zA-Z\\. ']+)",
                             "( \\(?(?<player>", name.pattern, ")\\)?)?",
                             "( \\(?-?(?<dist>\\d{1,3}) (yd|yard)s?\\)?)?",
                             "( (?<decision>accepted|declined)?)?")
@@ -34,7 +34,7 @@ parse.penalty = function(play, meta) {
     penalty <- sapply(patterns, function(p) grepl(pattern=p, x=pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) 
     
     if (any(penalty)) {
-        match = regex(patterns[which(penalty)[1]], pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
+        match <- regex(patterns[which(penalty)[1]], pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
         
         play$penalty = TRUE
         play$penalty_type = match[1,'penalty']

@@ -1,6 +1,6 @@
 #' Check whether this play is a kick off and if so, interpret it accordingly.
 #'
-parse.kickoff <- function(pbp, play) {
+parse.kickoff <- function(play) {
     play$kickoff <- FALSE
 
     kickoff_regex <- paste("(?<kicker>", name.pattern, ") kickoff for (?<kickdist>\\d{1,3}) ",
@@ -8,8 +8,8 @@ parse.kickoff <- function(pbp, play) {
         "(yd|yard)s?|(a )?loss of (?<retloss>\\d+) (yd|yard)s?|(?<retnogain>no gain))",
         "|.*(?<touchback>touchback))?", sep='')
         
-    if (grepl(kickoff_regex, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
-        match <- regex(kickoff_regex, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
+    if (grepl(kickoff_regex, play$pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
+        match <- regex(kickoff_regex, play$pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
         play$kickoff <- TRUE
         play$kicker <- format.name(match[1,'kicker'])
         play$returner <- ifelse(!is.na(match[1,'returner1']), format.name(match[1,'returner1']), format.name(match[1,'returner2']))

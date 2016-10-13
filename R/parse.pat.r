@@ -1,5 +1,5 @@
-parse.pat = function(pbp, play) {
-    play$PAT = FALSE
+parse.pat <- function(play) {
+    play$PAT <- FALSE
 
     # pat_regex1 = paste0("(?<kicker>", name.pattern, ")",
     #     " (extra point|KICK|PAT)",
@@ -8,11 +8,11 @@ parse.pat = function(pbp, play) {
         " (extra point|KICK|PAT)",
         "( (?<made>GOOD|MADE)| (?<missed>MISSED|NO GOOD|BLOCKED))?\\)?")
 
-    if (grepl(pat_regex, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
+    if (grepl(pat_regex, play$pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
         play$PAT <- TRUE
         play$made <- TRUE
         
-        match <- regex(pat_regex1, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
+        match <- regex(pat_regex, play$pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
         play$kicker <- format.name(match[1,'kicker'])     
            
         if (!is.na(match[1,'missed'])) {

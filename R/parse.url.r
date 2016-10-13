@@ -41,7 +41,7 @@ parse.url <- function(url) {
         play <- parse.penalty(play, meta)
         play <- parse.fumble(play, meta)
         play <- parse.touchdown(pbp, play)
-        play <- parse.special(pbp, play)
+        play <- parse.special(play)
         play <- parse.first.down(pbp, play)
         play <- parse.interception(pbp, play)
         

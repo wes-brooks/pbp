@@ -2,12 +2,11 @@ parse.sack <- function(pbp, play) {
   play$sack <- FALSE
   play$sack.credit <- NA
   
-  sack_regex1 <- paste0("(?<passer>", name.pattern, ") (sack|sacked)( by (?<sackcredit>", name.pattern, "))? for ((?<gain>\\d+) ",
+  sack_regex <- paste0("(?<passer>", name.pattern, ") (sack|sacked)( by (?<sackcredit>", name.pattern, "))? for ((?<gain>\\d+) ",
                       "(yd|yard)s?|(a )?loss of (?<loss>\\d+) (yd|yard)s?|(?<nogain>no gain))")
-  # sack_regex2 = "(?<passer>[-a-zA-Z\\. ']+) (?<gain>\\d+) (yd|yard)s? (sacked|sack)"
-  
-  if (grepl(sack_regex1, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
-    match = regex(sack_regex1, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
+
+  if (grepl(sack_regex, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
+    match = regex(sack_regex, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
     
     play$sack <- TRUE
     play$pass <- TRUE
@@ -17,15 +16,7 @@ parse.sack <- function(pbp, play) {
     if (!is.na(match[1,'gain'])) {play$gain <- as.numeric(match[1,'gain'])}
     else if (!is.na(match[1,'loss'])) {play$gain <- -as.numeric(match[1,'loss'])}
     else if (!is.na(match[1,'nogain'])) {play$gain <- 0}
-  } #else if (grepl(sack_regex2, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)) {
-  #   match <- regex(sack_regex2, pbp, perl=TRUE, fixed=FALSE, ignore.case=TRUE)
-  #   
-  #   play$sack <- TRUE
-  #   play$pass <- TRUE
-  #   play$passer <- match[1,'player']
-  #   
-  #   if (!is.na(match[1,'gain'])) {play$gain = as.numeric(match[1,'gain'])}
-  # }
+  }
   
   return(play)
 }
