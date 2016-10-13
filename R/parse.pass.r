@@ -8,7 +8,7 @@ parse.pass <- function(pbp, play) {
         "((?<gain>\\d+) (yd|yard)s?|(a )?loss of (?<loss>\\d+) (yd|yard)s?|",
         "(?<nogain>no gain))))?)?", sep="")
         
-    pass_regex2 <- paste0("(?<receiver>", name.pattern, ") ((?<gain>\\d+) (yd|yard)s? )?pass .*from (?<QB>", name.pattern, ")")
+    pass_regex2 <- paste0("(?<receiver>", name.pattern, ") ((?<gain>\\d+) (yd|yard)s? )?pass( (?<complete>complete))? .*from (?<QB>", name.pattern, ")")
     
     # test whether this play matches any off the pass patterns
     pass.patterns <- c(pass_regex1, pass_regex2)
