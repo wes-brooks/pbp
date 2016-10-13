@@ -43,7 +43,7 @@ parse.url <- function(url) {
         play <- parse.touchdown(play)
         play <- parse.special(play)
         play <- parse.first.down(pbp, play)
-        play <- parse.interception(pbp, play)
+        play <- parse.interception(play)
         
         #Put scores in the table
         play$margin <- play$score.offense - play$score.defense
