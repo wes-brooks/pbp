@@ -1,5 +1,6 @@
 parse.rush <- function(pbp, play) {
     play$rush <- FALSE
+    play$kneeldown <- FALSE
 
     # regular expresions to identify rushing plays
     rush_regex1 <- paste0("(?<player>", name.pattern, ") (run|rush) [\\s\\w]*for ((?<gain>\\d+) ",
@@ -23,6 +24,12 @@ parse.rush <- function(pbp, play) {
         play$carrier <- format.name(match[1,'player'])
         
         if (!is.na(match[1,'gain'])) {play$gain <- as.numeric(match[1,'gain'])}
+    }
+    
+    # kneeldowns are coded as "team rush"
+    if (play$rush && play$carrier %in% c('TEAM', 'team', 'Team')) {
+      play$rush <- FALSE
+      play$kneeldown <- TRUE
     }
 
     return(play)
