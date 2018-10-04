@@ -23,7 +23,7 @@ ExtractPlays <- function(url) {
     
     team.patterns <- paste(meta$home.school, meta$home.abbrev, meta$away.school, meta$away.abbrev, sep='|')
     
-    playmeta.regex = paste0("^(?<down>1st|2nd|3rd|4th|1ST|2ND|3RD|4TH) (and|AND) ",
+    playmeta.regex = paste0("^(?<down>1st|2nd|3rd|4th|1ST|2ND|3RD|4TH) (and|AND|&) ",
                             "(?<togo>\\d{1,2}|goal|Goal|GOAL) at (?<field>", team.patterns, ")? ?",
                             "(?<yardline>\\d{1,2})$")
     
